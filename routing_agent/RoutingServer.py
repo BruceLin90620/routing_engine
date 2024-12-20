@@ -2,6 +2,8 @@ from routing_agent_interfaces.srv import RoutingServiceMsg,MergeWaypointGraphSer
 import rclpy
 
 from rclpy.node import Node
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
+
 import routing_agent.RoutingAgent as RoutingAgent
 import json
 from ConvertDataFormat import convertJSONToStr,convertStrToJSON,saveJSONAt
@@ -18,10 +20,17 @@ class RoutingServer(Node):
 
     def __init__(self):
         super().__init__('routing_server')
+
+        qos = QoSProfile(
+        depth=1,
+        reliability=ReliabilityPolicy.RELIABLE,
+        durability=DurabilityPolicy.TRANSIENT_LOCAL)
+        
         self.loadWaypointGraphService=self.create_service(LoadWaypointGraphServiceMsg,"LoadWaypointGraphService",self.LoadWaypointGraphServiceCallBack)
         self.mergeWaypointGraphService=self.create_service(MergeWaypointGraphServiceMsg,"MergeWaypointGraphService",self.MergeWaypointGraphServiceCallBack)
         self.routingService = self.create_service(RoutingServiceMsg, 'RoutingService', self.RoutingServiceCallBack)
-        self.navService=self.create_service(NavServiceMsg,'NavService',self.NavServiceCallBack)
+        # self.navService=self.create_service(NavServiceMsg,'NavService',self.NavServiceCallBack)
+        self.navService=self.create_service(NavServiceMsg,'NavService',self.NavServiceCallBack, qos_profile = qos)
 
 
     def MergeWaypointGraphServiceCallBack(self,request,response):
