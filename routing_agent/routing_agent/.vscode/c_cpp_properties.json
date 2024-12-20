@@ -6,9 +6,8 @@
         "limitSymbolsToIncludedHeaders": false
       },
       "includePath": [
-        "/home/csl/ros2_ws/install/simple_interfaces/include/**",
-        "/home/csl/ros2_ws/install/routing_agent_interfaces/include/**",
         "/opt/ros/humble/include/**",
+        "include/**",
         "/usr/include/**"
       ],
       "name": "ROS",
