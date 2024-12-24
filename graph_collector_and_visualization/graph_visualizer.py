@@ -27,7 +27,7 @@ class WaypointVisualizer(Node):
 
     def load_waypoints(self):
         # In practice, you might want to use a parameter or command line argument for the file path
-        with open('test_run/sample_data/waypointgraph_002_20241220_175318.json', 'r') as f:
+        with open('graph_collector_and_visualization/waypointgraph_001_20241224_105920.json', 'r') as f:
             return json.load(f)
 
     def create_waypoint_marker(self, waypoint_id, position):
