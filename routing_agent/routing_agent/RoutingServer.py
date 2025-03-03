@@ -1,3 +1,4 @@
+import rclpy.logging
 from routing_agent_interfaces.srv import RoutingServiceMsg,MergeWaypointGraphServiceMsg,LoadWaypointGraphServiceMsg,NavServiceMsg
 import rclpy
 from rclpy.node import Node
@@ -29,10 +30,11 @@ class RoutingServer(Node):
         self.loadWaypointGraphService=self.create_service(LoadWaypointGraphServiceMsg,"LoadWaypointGraphService",self.LoadWaypointGraphServiceCallBack)
         self.mergeWaypointGraphService=self.create_service(MergeWaypointGraphServiceMsg,"MergeWaypointGraphService",self.MergeWaypointGraphServiceCallBack)
         self.routingService = self.create_service(RoutingServiceMsg, 'RoutingService', self.RoutingServiceCallBack)
-        # self.navService=self.create_service(NavServiceMsg,'NavService',self.NavServiceCallBack)
-        self.navService=self.create_service(NavServiceMsg,'NavService',self.NavServiceCallBack, qos_profile = qos)
+        self.navService=self.create_service(NavServiceMsg,'NavService',self.NavServiceCallBack)
+        # self.navService=self.create_service(NavServiceMsg,'NavService',self.NavServiceCallBack, qos_profile = qos)
 
         self.visualizer = WaypointVisualizer(self)
+        self.task_waypoint = ""
 
 
     def MergeWaypointGraphServiceCallBack(self,request,response):
@@ -77,6 +79,8 @@ class RoutingServer(Node):
                 response.response_data=str(self.routingEngine.taskSequence)
             except:
                 raise KeyError("Failed to findpath")
+            
+            self.task_waypoint = request.task_data
 
         else:
             #change it to log... something
@@ -96,9 +100,11 @@ class RoutingServer(Node):
         if hasattr(self, 'waypointGraph'):
             self.visualizer.visualize_graph(
                 self.waypointGraph.convertToJSON(),
-                request.i_am_at
+                request.i_am_at,
+                self.routingEngine.response()['node_sequence:'],
+                self.task_waypoint
             )
-
+        
         return response
 
 

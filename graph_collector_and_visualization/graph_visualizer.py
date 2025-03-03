@@ -27,7 +27,7 @@ class WaypointVisualizer(Node):
 
     def load_waypoints(self):
         # In practice, you might want to use a parameter or command line argument for the file path
-        with open('graph_collector_and_visualization/waypointgraph_001_20241224_105920.json', 'r') as f:
+        with open('/home/bruce/CSL/Spot/routing_engine_ws/src/routing_engine/graph_collector_and_visualization/waypointgraph_002_20250303.json', 'r') as f:
             return json.load(f)
 
     def create_waypoint_marker(self, waypoint_id, position):
@@ -47,9 +47,9 @@ class WaypointVisualizer(Node):
         sphere_marker.pose.orientation.w = 1.0
         
         # Set scale
-        sphere_marker.scale.x = 0.3
-        sphere_marker.scale.y = 0.3
-        sphere_marker.scale.z = 0.3
+        sphere_marker.scale.x = 0.2
+        sphere_marker.scale.y = 0.2
+        sphere_marker.scale.z = 0.2
         
         # Set color (blue for all waypoints)
         color = ColorRGBA()
@@ -77,7 +77,7 @@ class WaypointVisualizer(Node):
 
         # Set text properties
         text_marker.text = waypoint_id
-        text_marker.scale.z = 0.3  # Text height
+        text_marker.scale.z = 0.2  # Text height
 
         # White color for text
         text_marker.color.r = 1.0
