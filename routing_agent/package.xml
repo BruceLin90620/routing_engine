@@ -8,7 +8,6 @@
   <license>Apache-2.0</license>
 
   <depend>rclpy</depend>
-  <depend>elkai</depend>
   <depend>routing_agent_interfaces</depend>
   <depend>rosidl_runtime_py</depend>
 
@@ -18,7 +17,6 @@
   <test_depend>python3-pytest</test_depend>
   <exec_depend>tutorial_interfaces</exec_depend>
   <exec_depend>python3-elkai</exec_depend>
-  <build_depend>rostest</build_depend>
 
   <export>
     <build_type>ament_python</build_type>

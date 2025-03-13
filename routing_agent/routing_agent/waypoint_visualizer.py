@@ -12,19 +12,14 @@ class WaypointVisualizer:
             10
         )
 
-    def create_waypoint_marker(self, waypoint_id, position, is_current=False, is_planning_path=False, is_task=False):
-        # Create marker
+    def create_waypoint_marker(self, waypoint_id, position, is_current=False):
+        # Create sphere marker
         sphere_marker = Marker()
         sphere_marker.header.frame_id = "map"
         sphere_marker.header.stamp = self.node.get_clock().now().to_msg()
         sphere_marker.ns = "waypoints"
         sphere_marker.id = hash(waypoint_id) % 2147483647
-        
-        if is_task:
-            sphere_marker.type = Marker.CUBE
-        else:
-            sphere_marker.type = Marker.SPHERE
-            
+        sphere_marker.type = Marker.SPHERE
         sphere_marker.action = Marker.ADD
         
         sphere_marker.pose.position.x = position[0]
@@ -32,35 +27,17 @@ class WaypointVisualizer:
         sphere_marker.pose.position.z = 0.0
         sphere_marker.pose.orientation.w = 1.0
         
-        # Adjust scale for task waypoints
-        if is_task:
-            sphere_marker.scale.x = 0.2
-            sphere_marker.scale.y = 0.2
-            sphere_marker.scale.z = 0.2
-        else:
-            sphere_marker.scale.x = 0.15
-            sphere_marker.scale.y = 0.15
-            sphere_marker.scale.z = 0.15
+        sphere_marker.scale.x = 0.3
+        sphere_marker.scale.y = 0.3
+        sphere_marker.scale.z = 0.3
         
-        # Set color
+        # Set color (red for current waypoint, blue for others)
         color = ColorRGBA()
-        if is_task:
-            # Yellow for task waypoints
-            color.r = 1.0
-            color.g = 1.0
-            color.b = 0.0
-        elif is_current:
-            # Red for current waypoint
+        if is_current:
             color.r = 1.0
             color.g = 0.0
             color.b = 0.0
-        elif is_planning_path:
-            # Green for planning path
-            color.r = 0.0
-            color.g = 1.0
-            color.b = 0.0
         else:
-            # Blue for others
             color.r = 0.0
             color.g = 0.0
             color.b = 1.0
@@ -84,9 +61,9 @@ class WaypointVisualizer:
         text_marker.text = waypoint_id
         text_marker.scale.z = 0.3
 
-        text_marker.color.r = 1.0
-        text_marker.color.g = 1.0
-        text_marker.color.b = 1.0
+        text_marker.color.r = 0.0
+        text_marker.color.g = 0.0
+        text_marker.color.b = 0.0
         text_marker.color.a = 1.0
         
         return [sphere_marker, text_marker]
@@ -137,7 +114,7 @@ class WaypointVisualizer:
             
         return deletion_markers
 
-    def visualize_graph(self, waypoint_data, current_waypoint_id, planning_path_id, task_waypoint):
+    def visualize_graph(self, waypoint_data, current_waypoint_id):
         if not waypoint_data:
             return
 
@@ -148,27 +125,16 @@ class WaypointVisualizer:
         # Get the prefix (e.g., "000" from "000_000")
         current_prefix = current_waypoint_id.split('_')[0]
         
-        current_prefix_planning_points = []
-        for point_id in planning_path_id:
-            if point_id.split('_')[0] == current_prefix:
-                current_prefix_planning_points.append(point_id)
-                if len(current_prefix_planning_points) > 0 and point_id.split('_')[0] != current_prefix:
-                    break
-        
         # Filter waypoints based on prefix and create markers
         for waypoint_id, waypoint_info in waypoint_data.items():
             prefix = waypoint_id.split('_')[0]
             if prefix == current_prefix:
                 # Create waypoint markers
                 is_current = (waypoint_id == current_waypoint_id)
-                is_planning_path = (waypoint_id in current_prefix_planning_points)
-                is_task = (waypoint_id in task_waypoint)
                 markers = self.create_waypoint_marker(
                     waypoint_id,
                     waypoint_info['local_location'],
-                    is_current,
-                    is_planning_path,
-                    is_task
+                    is_current
                 )
                 marker_array.markers.extend(markers)
                 
